@@ -50,3 +50,11 @@
                          "c => c")) => (throws IllegalArgumentException
                                                "Error: self-reference"))
 
+(fact "Multiple Jobs, Circular Dependency Chain"
+      (order-jobs (lines "a =>"
+                         "b => c"
+                         "c => f"
+                         "d => a"
+                         "e =>"
+                         "f => b")) => (throws IllegalArgumentException
+                                               "Error: circular depencence"))

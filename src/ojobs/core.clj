@@ -23,9 +23,15 @@
 
 (defn order-seq [dependencies]
   (lazy-seq
-    (when-let [next-jobs (seq (independent-jobs dependencies))]
-      (cons next-jobs
-            (order-seq (remove-jobs dependencies next-jobs))))))
+    (let [next-jobs (independent-jobs dependencies)]
+      (cond
+        (seq next-jobs)
+        (cons next-jobs (order-seq (remove-jobs dependencies next-jobs)))
+
+        (seq dependencies)
+        (throw (IllegalArgumentException. "Error: circular depencence"))
+
+        :else nil))))
 
 (defn order-jobs [input]
   (let [lines        (s/split-lines input)
