@@ -4,6 +4,11 @@
         ojobs.core)
   (:require [clojure.string :as s]))
 
+(defn precedence [a b]
+  (fn [order]
+    (< (.indexOf order a)
+       (.indexOf order b))))
+
 (fact "no jobs"
       (order-jobs "") => "")
 
@@ -16,3 +21,9 @@
                                       "b =>"
                                       "c =>"]))) => (set "abc"))
 
+(fact "Multiple Jobs, Single Dependency"
+      (let [order (order-jobs (s/join \newline ["a =>"
+                                                "b => c"
+                                                "c =>"]))]
+        (set order) => (set "abc")
+        order => (precedence "c" "b")))
