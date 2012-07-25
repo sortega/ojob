@@ -44,3 +44,9 @@
         order => (precedence "a" "d")
         order => (precedence "b" "e")))
 
+(fact "Multiple Jobs, Self Referencing Dependency"
+      (order-jobs (lines "a =>"
+                         "b =>"
+                         "c => c")) => (throws IllegalArgumentException
+                                               "Error: self-reference"))
+

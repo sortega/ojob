@@ -2,8 +2,11 @@
   (:require [clojure.string :as s]))
 
 (defn parse-line [line]
-  (let [[task & dependencies] (s/split line #"\s*=>\s*")]
-    [task (set dependencies)]))
+  (let [[task & others] (s/split line #"\s*=>\s*")
+        deps            (set others)]
+    (if (get deps task)
+      (throw (IllegalArgumentException. "Error: self-reference"))
+      [task deps])))
 
 (defn independent-jobs [dependencies]
   (->> dependencies
