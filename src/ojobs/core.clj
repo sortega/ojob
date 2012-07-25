@@ -1,6 +1,12 @@
 (ns ojobs.core
   (:require [clojure.string :as s]))
 
-(defn order-jobs [input]
+(defn parse-line [line]
   (first
-    (s/split input #"\s*=>\s*")))
+    (s/split line #"\s*=>\s*")))
+
+(defn order-jobs [input]
+  (->> input
+    s/split-lines
+    (map parse-line)
+    (apply str)))
