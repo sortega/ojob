@@ -2,11 +2,30 @@
   (:require [clojure.string :as s]))
 
 (defn parse-line [line]
-  (first
-    (s/split line #"\s*=>\s*")))
+  (let [[task & dependencies] (s/split line #"\s*=>\s*")]
+    [task (set dependencies)]))
+
+(defn independent-jobs [dependencies]
+  (->> dependencies
+    (filter (comp empty? second))
+    (map first)))
+
+(defn remove-jobs [dependencies jobs]
+  (let [not-removed? (complement (set jobs))]
+    (->> dependencies
+      (keep (fn [[job deps]]
+              (when (not-removed? job)
+                [job (filter not-removed? deps)])))
+      (into {}))))
+
+(defn order-seq [dependencies]
+  (lazy-seq
+    (when-let [next-jobs (seq (independent-jobs dependencies))]
+      (cons next-jobs
+            (order-seq (remove-jobs dependencies next-jobs))))))
 
 (defn order-jobs [input]
-  (->> input
-    s/split-lines
-    (map parse-line)
-    (apply str)))
+  (let [lines        (s/split-lines input)
+        dependencies (into {} (map parse-line lines))
+        order        (flatten (order-seq dependencies))]
+    (apply str order)))
