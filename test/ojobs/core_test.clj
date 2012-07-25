@@ -5,3 +5,6 @@
 
 (fact "no jobs"
       (order-jobs "") => "")
+
+(fact "a single job"
+      (order-jobs "a =>\n") => "a")
