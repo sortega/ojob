@@ -30,3 +30,17 @@
                                      "c =>"))]
         (set order) => (set "abc")
         order => (precedence "c" "b")))
+
+(fact "Multiple Jobs, Multiple Dependencies"
+      (let [order (order-jobs (lines "a =>"
+                                     "b => c"
+                                     "c => f"
+                                     "d => a"
+                                     "e => b"
+                                     "f =>"))]
+        (set order) => (set "abcdef")
+        order => (precedence "c" "b")
+        order => (precedence "f" "c")
+        order => (precedence "a" "d")
+        order => (precedence "b" "e")))
+
