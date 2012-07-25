@@ -9,6 +9,9 @@
     (< (.indexOf order a)
        (.indexOf order b))))
 
+(defn lines [& elems]
+  (s/join \newline elems))
+
 (fact "no jobs"
       (order-jobs "") => "")
 
@@ -17,13 +20,13 @@
 
 (fact "some jobs without dependencies"
       (set
-        (order-jobs (s/join \newline ["a =>"
-                                      "b =>"
-                                      "c =>"]))) => (set "abc"))
+        (order-jobs (lines "a =>"
+                           "b =>"
+                           "c =>"))) => (set "abc"))
 
 (fact "Multiple Jobs, Single Dependency"
-      (let [order (order-jobs (s/join \newline ["a =>"
-                                                "b => c"
-                                                "c =>"]))]
+      (let [order (order-jobs (lines "a =>"
+                                     "b => c"
+                                     "c =>"))]
         (set order) => (set "abc")
         order => (precedence "c" "b")))
